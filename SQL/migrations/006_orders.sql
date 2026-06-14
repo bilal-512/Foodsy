@@ -1,0 +1,75 @@
+USE FooddeliveryDB;
+
+CREATE TABLE PromoCode (
+    PromoCodeID INT PRIMARY KEY AUTO_INCREMENT,
+    Code VARCHAR(50) NOT NULL,
+    DiscountType ENUM('percent', 'flat') NOT NULL DEFAULT 'percent',
+    DiscountValue DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    MinOrderAmount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    MaxUses INT NOT NULL DEFAULT 100,
+    UsedCount INT NOT NULL DEFAULT 0,
+    ValidFrom DATE NOT NULL,
+    ValidUntil DATE NOT NULL,
+    IsActive BOOLEAN NOT NULL DEFAULT TRUE,
+    CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_promo_code (Code)
+) ENGINE=InnoDB;
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT NOT NULL,
+    AdminID INT DEFAULT NULL,
+    AddressID INT DEFAULT NULL,
+    AssignedRiderID INT DEFAULT NULL,
+    PromoCodeID INT DEFAULT NULL,
+    OrderStatus ENUM(
+        'pending', 'confirmed', 'preparing', 'assigned',
+        'picked_up', 'delivered', 'cancelled'
+    ) NOT NULL DEFAULT 'pending',
+    PlacedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ConfirmedAt DATETIME DEFAULT NULL,
+    ReadyAt DATETIME DEFAULT NULL,
+    DeliveredAt DATETIME DEFAULT NULL,
+    CancelledAt DATETIME DEFAULT NULL,
+    CancelReason VARCHAR(200) DEFAULT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID) ON DELETE RESTRICT,
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID) ON DELETE SET NULL,
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID) ON DELETE SET NULL,
+    FOREIGN KEY (AssignedRiderID) REFERENCES Rider(RiderID) ON DELETE SET NULL,
+    FOREIGN KEY (PromoCodeID) REFERENCES PromoCode(PromoCodeID) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE OrderItem (
+    OrderItemID INT PRIMARY KEY AUTO_INCREMENT,
+    OrderID INT NOT NULL,
+    MenuItemID INT NOT NULL,
+    VariantID INT DEFAULT NULL,
+    Quantity INT NOT NULL DEFAULT 1 CHECK (Quantity > 0),
+    UnitPrice DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID) ON DELETE RESTRICT,
+    FOREIGN KEY (VariantID) REFERENCES MenuItemVariant(VariantID) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE Bill (
+    BillID INT PRIMARY KEY AUTO_INCREMENT,
+    OrderID INT NOT NULL,
+    SubTotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    TaxAmount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    DiscountAmount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    TotalAmount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    PaymentStatus ENUM('pending', 'paid', 'failed', 'cancelled') NOT NULL DEFAULT 'pending',
+    GeneratedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    UNIQUE KEY uq_bill_order (OrderID)
+) ENGINE=InnoDB;
+
+CREATE TABLE Payment (
+    PaymentID INT PRIMARY KEY AUTO_INCREMENT,
+    BillID INT NOT NULL,
+    Method ENUM('cash', 'card', 'online') NOT NULL DEFAULT 'cash',
+    TransactionRef VARCHAR(100) DEFAULT NULL,
+    GatewayResponse VARCHAR(200) DEFAULT NULL,
+    PaidAt DATETIME DEFAULT NULL,
+    FOREIGN KEY (BillID) REFERENCES Bill(BillID) ON DELETE CASCADE
+) ENGINE=InnoDB;

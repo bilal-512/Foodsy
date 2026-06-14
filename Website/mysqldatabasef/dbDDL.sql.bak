@@ -1,0 +1,285 @@
+CREATE DATABASE FooddeliveryDB;
+USE FooddeliveryDB;
+
+-- =========================
+-- PERSON TABLE
+-- =========================
+CREATE TABLE Person (
+    PersonID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Email VARCHAR(100) UNIQUE,
+    Phone VARCHAR(20),
+    Password VARCHAR(100),
+    Role VARCHAR(20),
+    IsActive BOOLEAN
+);
+
+-- =========================
+-- CUSTOMER
+-- =========================
+CREATE TABLE Customer (
+    CustomerID INT PRIMARY KEY,
+    PersonID INT,
+    WalletBalance DECIMAL(10,2),
+    DefaultAddressID INT,
+
+    FOREIGN KEY (PersonID) REFERENCES Person(PersonID),
+    FOREIGN KEY (DefaultAddressID) REFERENCES Address(AddressID)
+);
+-- =========================
+-- ADMIN
+-- =========================
+CREATE TABLE Admin (
+    AdminID INT PRIMARY KEY,
+    PersonID INT,
+    Permissions VARCHAR(200),
+    LastLogin DATETIME,
+    FOREIGN KEY (PersonID) REFERENCES Person(PersonID)
+);
+
+-- =========================
+-- EMPLOYEE
+-- =========================
+CREATE TABLE Employee (
+    EmployeeID INT PRIMARY KEY,
+    PersonID INT,
+    AdminID INT,
+    JobTitle VARCHAR(50),
+    Department VARCHAR(50),
+    HireDate DATE,
+    IsActive BOOLEAN,
+    FOREIGN KEY (PersonID) REFERENCES Person(PersonID),
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID)
+);
+
+-- =========================
+-- AREA
+-- =========================
+CREATE TABLE Area (
+    AreaID INT PRIMARY KEY,
+    AreaName VARCHAR(100),
+    LatCoordinate DECIMAL(10,6),
+    LngCoordinate DECIMAL(10,6)
+);
+
+-- =========================
+-- RIDER
+-- =========================
+CREATE TABLE Rider (
+    RiderID INT PRIMARY KEY,
+    PersonID INT,
+    AssignedAreaID INT,
+    AdminID INT,
+    VehicleType VARCHAR(50),
+    Licence VARCHAR(50),
+    IsAvailable BOOLEAN,
+    AvgRating DECIMAL(3,2),
+    FOREIGN KEY (PersonID) REFERENCES Person(PersonID),
+    FOREIGN KEY (AssignedAreaID) REFERENCES Area(AreaID),
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID)
+);
+
+-- =========================
+-- ADDRESS
+-- =========================
+CREATE TABLE Address (
+    AddressID INT PRIMARY KEY,
+    CustomerID INT,
+    AreaID INT,
+    Label VARCHAR(50),
+    Street VARCHAR(100),
+    City VARCHAR(50),
+    Latitude DECIMAL(10,6),
+    Longitude DECIMAL(10,6),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (AreaID) REFERENCES Area(AreaID)
+);
+
+-- =========================
+-- RESTAURANT
+-- =========================
+CREATE TABLE Restaurant (
+    RestaurantID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Logo VARCHAR(200),
+    OpenTime TIME,
+    CloseTime TIME,
+    BaseLocation VARCHAR(100)
+);
+
+-- =========================
+-- CATEGORY
+-- =========================
+CREATE TABLE Category (
+    CategoryID INT PRIMARY KEY,
+    RestaurantID INT,
+    Name VARCHAR(100),
+    Description VARCHAR(200),
+    DisplayOrder INT,
+    IsActive BOOLEAN,
+    ImgURL VARCHAR(200),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID)
+);
+
+-- =========================
+-- MENU ITEM
+-- =========================
+CREATE TABLE MenuItem (
+    MenuItemID INT PRIMARY KEY,
+    CategoryID INT,
+    Name VARCHAR(100),
+    Description VARCHAR(200),
+    IsAvailable BOOLEAN,
+    BasePrice DECIMAL(10,2),
+    FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
+);
+
+-- =========================
+-- VARIANT
+-- =========================
+CREATE TABLE MenuItemVariant (
+    VariantID INT PRIMARY KEY,
+    MenuItemID INT,
+    Label VARCHAR(50),
+    PriceDelta DECIMAL(10,2),
+    FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID)
+);
+
+-- =========================
+-- CART
+-- =========================
+CREATE TABLE Cart (
+    CartID INT PRIMARY KEY,
+    CustomerID INT,
+    Status VARCHAR(20),
+    CreatedAt DATETIME,
+    UpdatedAt DATETIME,
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
+);
+
+-- =========================
+-- CART ITEM
+-- =========================
+CREATE TABLE CartItem (
+    CartItemID INT PRIMARY KEY,
+    CartID INT,
+    MenuItemID INT,
+    VariantID INT,
+    Quantity INT,
+    Price DECIMAL(10,2),
+    FOREIGN KEY (CartID) REFERENCES Cart(CartID),
+    FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID),
+    FOREIGN KEY (VariantID) REFERENCES MenuItemVariant(VariantID)
+);
+
+-- =========================
+-- PROMO CODE
+-- =========================
+CREATE TABLE PromoCode (
+    PromoCodeID INT PRIMARY KEY,
+    Code VARCHAR(50) UNIQUE,
+    DiscountType VARCHAR(20),
+    DiscountValue DECIMAL(10,2),
+    MinOrderAmount DECIMAL(10,2),
+    MaxUses INT,
+    UsedCount INT,
+    ValidFrom DATE,
+    ValidUntil DATE,
+    IsActive BOOLEAN
+);
+
+-- =========================
+-- ORDER
+-- =========================
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    AdminID INT,
+    AddressID INT,
+    PromoCodeID INT,
+    OrderStatus VARCHAR(30),
+    PlacedAt DATETIME,
+    ConfirmedAt DATETIME,
+    ReadyAt DATETIME,
+    DeliveredAt DATETIME,
+    CancelledAt DATETIME,
+    CancelReason VARCHAR(200),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID),
+    FOREIGN KEY (PromoCodeID) REFERENCES PromoCode(PromoCodeID)
+);
+
+-- =========================
+-- ORDER ITEM
+-- =========================
+CREATE TABLE OrderItem (
+    OrderItemID INT PRIMARY KEY,
+    OrderID INT,
+    MenuItemID INT,
+    VariantID INT,
+    Quantity INT,
+    UnitPrice DECIMAL(10,2),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID),
+    FOREIGN KEY (VariantID) REFERENCES MenuItemVariant(VariantID)
+);
+
+-- =========================
+-- BILL
+-- =========================
+CREATE TABLE Bill (
+    BillID INT PRIMARY KEY,
+    OrderID INT,
+    SubTotal DECIMAL(10,2),
+    TaxAmount DECIMAL(10,2),
+    DiscountAmount DECIMAL(10,2),
+    TotalAmount DECIMAL(10,2),
+    PaymentStatus VARCHAR(20),
+    GeneratedAt DATETIME,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+);
+
+-- =========================
+-- PAYMENT
+-- =========================
+CREATE TABLE Payment (
+    PaymentID INT PRIMARY KEY,
+    BillID INT,
+    Method VARCHAR(30),
+    TransactionRef VARCHAR(100),
+    GatewayResponse VARCHAR(200),
+    PaidAt DATETIME,
+    FOREIGN KEY (BillID) REFERENCES Bill(BillID)
+);
+
+-- =========================
+-- REVIEW
+-- =========================
+CREATE TABLE Review (
+    ReviewID INT PRIMARY KEY,
+    OrderID INT,
+    CustomerID INT,
+    RiderID INT,
+    FoodRating INT,
+    RiderRating INT,
+    Comment VARCHAR(200),
+    CreatedAt DATETIME,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (RiderID) REFERENCES Rider(RiderID)
+);
+
+-- =========================
+-- NOTIFICATION
+-- =========================
+CREATE TABLE Notification (
+    NotificationID INT PRIMARY KEY,
+    PersonID INT,
+    Title VARCHAR(100),
+    Message VARCHAR(200),
+    Type VARCHAR(50),
+    IsRead BOOLEAN,
+    SentAt DATETIME,
+    FOREIGN KEY (PersonID) REFERENCES Person(PersonID)
+);

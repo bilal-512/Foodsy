@@ -1,0 +1,17 @@
+nohup: ignoring input
+Backend running on http://localhost:5000
+node:internal/process/promises:391
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+Error: Cannot add or update a child row: a foreign key constraint fails (`FooddeliveryDB`.`Cart`, CONSTRAINT `Cart_ibfk_1` FOREIGN KEY (`CustomerID`) REFERENCES `Customer` (`CustomerID`))
+    at file:///home/bilal/Desktop/Project/Database%20Project/Project/backend/routes/cart.js:30:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  code: 'ER_NO_REFERENCED_ROW_2',
+  errno: 1452,
+  sqlState: '23000',
+  sqlMessage: 'Cannot add or update a child row: a foreign key constraint fails (`FooddeliveryDB`.`Cart`, CONSTRAINT `Cart_ibfk_1` FOREIGN KEY (`CustomerID`) REFERENCES `Customer` (`CustomerID`))',
+  sql: "INSERT INTO Cart (CartID, CustomerID, Status, CreatedAt, UpdatedAt) VALUES (NULL, 2, 'active', NOW(), NOW())"
+}
+
+Node.js v20.20.2
