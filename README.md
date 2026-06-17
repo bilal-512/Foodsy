@@ -1,460 +1,272 @@
-🍔 Food Delivery Management System Database
+# 🍔 Foodsy - Restaurant Ordering & Management System
 
-📌 Project Description
-
-The Food Delivery Management System is a comprehensive database solution designed to manage the operations of an online food ordering and delivery platform. The system supports customers, restaurants, administrators, riders, menu management, cart operations, order processing, billing, payments, delivery tracking, reviews, and notifications.
-
-The database has been designed using Entity Relationship Modeling (ERD), Relational Schema Mapping, Functional Dependency Analysis, and Database Normalization techniques up to Third Normal Form (3NF) to ensure data integrity, consistency, scalability, and minimal redundancy.
+Foodsy is a full-stack, role-based restaurant ordering and management web application. It features separate portals and capabilities for **Customers** (to browse menus, manage carts, and order), **Restaurant Admins** (to manage menus, employees, customers, and overall order flows), and **Employees/Riders** (to view and handle delivery assignments).
 
 ---
 
-🎯 Project Objectives
-
-General Objective
-
-To design and implement a normalized relational database for a modern food delivery platform that efficiently manages customer orders, restaurant menus, payments, deliveries, and user interactions.
-
-Specific Objectives
-
-- Manage customer and user information securely.
-- Support restaurant and menu management.
-- Enable customers to place and track food orders.
-- Maintain shopping carts and order histories.
-- Manage promotional discounts through promo codes.
-- Generate bills and process payments.
-- Assign riders for order deliveries.
-- Collect customer reviews and ratings.
-- Provide notification services for important events.
-- Ensure data integrity through normalization and relational constraints.
+## 📋 Table of Contents
+1. [Prerequisites & System Requirements](#-prerequisites--system-requirements)
+2. [Step-by-Step Installation Guide](#-step-by-step-installation-guide)
+   - [Step 1: Install Node.js & npm](#step-1-install-nodejs--npm)
+   - [Step 2: Install and Start MySQL](#step-2-install-and-start-mysql)
+   - [Step 3: Clone the Repository](#step-3-clone-the-repository)
+   - [Step 4: Install Dependencies](#step-4-install-dependencies)
+   - [Step 5: Configure Environment Variables](#step-5-configure-environment-variables)
+   - [Step 6: Set Up the Database](#step-6-set-up-the-database)
+3. [Running the Application](#-running-the-application)
+4. [Test Credentials](#-test-credentials)
+5. [Project Directory Structure](#-project-directory-structure)
+6. [Contributing Guidelines](#-contributing-guidelines)
+7. [License](#-license)
 
 ---
 
-🏗️ System Architecture
+## 🛠 Prerequisites & System Requirements
 
-The database follows a modular architecture consisting of the following major components:
+To run Foodsy locally, you must have the following installed on your machine:
 
-User Management
-
-- Person
-- Customer
-- Admin
-- Employee
-- Rider
-
-Location Management
-
-- Area
-- Address
-
-Restaurant Management
-
-- Restaurant
-- Category
-- MenuItem
-- MenuItemVariant
-
-Order Processing
-
-- Cart
-- CartItem
-- Orders
-- OrderItem
-
-Payment Management
-
-- PromoCode
-- Bill
-- Payment
-
-Delivery Management
-
-- Delivery
-
-Feedback Management
-
-- Review
-
-Communication Management
-
-- Notification
+*   **Node.js**: Version `18.x` or higher (includes `npm` package manager)
+*   **MySQL Server**: Version `8.0` or higher
+*   **Git**: For version control and cloning the repository
+*   **A Modern Browser**: Chrome, Firefox, Edge, or Safari
 
 ---
 
-📊 Database Schema
+## 🚀 Step-by-Step Installation Guide
 
-Core Entities
+### Step 1: Install Node.js & npm
+Node.js is the runtime environment used to run the backend and the build tools for the frontend.
 
-Person
+#### Windows & macOS:
+1. Go to the [Node.js Official Website](https://nodejs.org/).
+2. Download the **LTS (Long Term Support)** installer for your operating system.
+3. Run the installer and follow the prompt steps (keep the default settings).
+4. Verify the installation by opening your terminal or command prompt and running:
+   ```bash
+   node -v
+   npm -v
+   ```
 
-Stores common information for all system users.
-
-Attribute
-PersonID
-Name
-Email
-Phone
-Password
-Role
-IsActive
-
-Customer
-
-Stores customer-specific information.
-
-Attribute
-CustomerID
-PersonID
-WalletBalance
-DefaultAddressID
-
-Admin
-
-Stores administrative user information.
-
-Attribute
-AdminID
-PersonID
-Permissions
-LastLogin
-
-Employee
-
-Stores employee information.
-
-Attribute
-EmployeeID
-PersonID
-AdminID
-JobTitle
-Department
-HireDate
-IsActive
-
-Rider
-
-Stores rider information responsible for deliveries.
-
-Attribute
-RiderID
-PersonID
-AssignedAreaID
-AdminID
-VehicleType
-Licence
-IsAvailable
-AvgRating
+#### Linux (Debian/Ubuntu-based):
+Install Node.js via NodeSource or your package manager:
+```bash
+sudo apt update
+sudo apt install -y nodejs npm
+```
 
 ---
 
-Restaurant Module
+### Step 2: Install and Start MySQL
+Foodsy uses a MySQL database to store its information.
 
-Restaurant
-
-Attribute
-RestaurantID
-Name
-Logo
-OpenTime
-CloseTime
-BaseLocation
-
-Category
-
-Attribute
-CategoryID
-RestaurantID
-Name
-Description
-DisplayOrder
-IsActive
-ImgURL
-
-MenuItem
-
-Attribute
-MenuItemID
-CategoryID
-Name
-Description
-IsAvailable
-BasePrice
-
-MenuItemVariant
-
-Attribute
-VariantID
-MenuItemID
-Label
-PriceDelta
+1. Download and install **MySQL Community Server** from the [MySQL Downloads Page](https://dev.mysql.com/downloads/installer/).
+2. Set a secure password for the root user during the setup process.
+3. Make sure the MySQL Service is running:
+   *   **Windows**: Check the Services app and ensure `MySQL` is started.
+   *   **macOS / Linux**: Start via terminal:
+       ```bash
+       sudo systemctl start mysql   # Linux
+       mysql.server start           # macOS
+       ```
 
 ---
 
-Cart Module
-
-Cart
-
-Attribute
-CartID
-CustomerID
-Status
-CreatedAt
-UpdatedAt
-
-CartItem
-
-Attribute
-CartItemID
-CartID
-MenuItemID
-VariantID
-Quantity
-Price
+### Step 3: Clone the Repository
+Clone the project repository to your local machine using Git:
+```bash
+git clone <your-repository-url>
+cd Foodsy/Website
+```
+*(Note: Replace `<your-repository-url>` with the actual URL of this repository).*
 
 ---
 
-Order Module
+### Step 4: Install Dependencies
 
-Orders
+Foodsy is divided into a frontend client and a backend server. You need to install dependencies for both.
 
-Attribute
-OrderID
-CustomerID
-AdminID
-AddressID
-PromoCodeID
-OrderStatus
-PlacedAt
-ConfirmedAt
-ReadyAt
-DeliveredAt
-CancelledAt
-CancelReason
+#### 1. Install Frontend Dependencies (Root Folder)
+From the root project folder:
+```bash
+npm install
+```
 
-OrderItem
-
-Attribute
-OrderItemID
-OrderID
-MenuItemID
-VariantID
-Quantity
-UnitPrice
+#### 2. Install Backend Dependencies (`backend` Folder)
+Navigate to the backend directory and install its dependencies:
+```bash
+cd backend
+npm install
+cd ..
+```
 
 ---
 
-Payment Module
+### Step 5: Configure Environment Variables
 
-PromoCode
+The application relies on configuration variables stored in `.env` files. Copy the provided templates and fill in your details.
 
-Attribute
-PromoCodeID
-Code
-DiscountType
-DiscountValue
-MinOrderAmount
-MaxUses
-UsedCount
-ValidFrom
-ValidUntil
-IsActive
+#### 1. Configure the Frontend Environment
+From the root folder:
+```bash
+cp .env.example .env
+```
+Open the `.env` file in a text editor and verify the backend API URL:
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 
-Bill
-
-Attribute
-BillID
-OrderID
-SubTotal
-TaxAmount
-DiscountAmount
-TotalAmount
-PaymentStatus
-GeneratedAt
-
-Payment
-
-Attribute
-PaymentID
-BillID
-Method
-TransactionRef
-GatewayResponse
-PaidAt
+#### 2. Configure the Backend Environment
+Go into the `backend/` folder and copy the example file:
+```bash
+cp backend/.env.example backend/.env
+```
+Open `backend/.env` and configure your port, JWT secret key, and MySQL database connection:
+```env
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_mysql_root_password   # Replace with your MySQL password
+DB_NAME=FooddeliveryDB
+JWT_SECRET=any_secret_key_string       # Change this to any custom secure string
+```
 
 ---
 
-Delivery Module
+### Step 6: Set Up the Database
 
-Delivery
+Initialize your MySQL database using the SQL scripts located in the `mysqldatabasef/` folder.
 
-Attribute
-DeliveryID
-OrderID
-RiderID
-DistanceKM
-AssignedAt
-PickupTime
-DeliveredTime
-Status
+#### Option A: Full Schema & Seeds (Recommended for first-time setup)
+Open your terminal and run the following commands. Enter your MySQL password when prompted:
 
----
+```bash
+# 1. Create the database and tables structure
+mysql -u root -p < mysqldatabasef/dbDDL.sql
 
-Review Module
+# 2. Populate the database with mock records (restaurants, menus, categories)
+mysql -u root -p < mysqldatabasef/dbDML2.sql
+```
 
-Review
+#### Option B: Incremental Migrations (Alternative)
+If you want to apply migrations sequentially:
+```bash
+# Run migration files in order
+for f in mysqldatabasef/migrations/*.sql; do
+  mysql -u root -p < "$f"
+done
 
-Attribute
-ReviewID
-OrderID
-CustomerID
-RiderID
-FoodRating
-RiderRating
-Comment
-CreatedAt
+# Seed initial tables
+mysql -u root -p < mysqldatabasef/dbDML2.sql
+```
 
 ---
 
-Notification Module
+## 🏃 Running the Application
 
-Notification
+To run the application, you need to start **both** the backend API server and the frontend client dev server.
 
-Attribute
-NotificationID
-PersonID
-Title
-Message
-Type
-IsRead
-SentAt
+### 1. Start the Backend API Server
+Navigate to the `backend/` folder and run:
+```bash
+cd backend
+npm run dev
+```
+The server will start on `http://localhost:5000` and automatically restart when code changes are detected.
 
----
-
-🔗 Key Relationships
-
-- A Person can act as a Customer, Admin, Employee, or Rider.
-- A Customer can have multiple Addresses.
-- An Address belongs to an Area.
-- A Restaurant contains multiple Categories.
-- A Category contains multiple Menu Items.
-- A Menu Item may have multiple Variants.
-- A Customer owns a Cart.
-- Cart and MenuItem have a many-to-many relationship through CartItem.
-- A Customer places Orders.
-- Orders and MenuItems have a many-to-many relationship through OrderItem.
-- Orders may use Promo Codes.
-- Each Order generates one Bill.
-- Each Bill may have one Payment.
-- Riders deliver Orders.
-- Customers can review completed orders and riders.
-- Notifications are sent to users through Person records.
+### 2. Start the Frontend Dev Server
+In a new terminal window, navigate back to the root folder and run:
+```bash
+npm run dev
+```
+Vite will start the dev server, usually at `http://localhost:5173`. Open this URL in your web browser.
 
 ---
 
-🧩 Functional Dependencies
+## 🔑 Test Credentials
 
-Examples:
+You can use the following seeded accounts to log in and test different system roles immediately:
 
-PersonID → Name, Email, Phone, Password, Role, IsActive
+| Email | Password | Role | Description |
+| :--- | :--- | :--- | :--- |
+| `ali@gmail.com` | `123` | **Customer** | Browses menus, manages carts, checks out, tracks orders. |
+| `admin@email.com` | `admin@123` | **Admin** | Accesses the administrative dashboard, employee lists, orders, and menu catalogs. |
 
-CustomerID → PersonID, WalletBalance
-
-RestaurantID → Name, Logo, OpenTime, CloseTime, BaseLocation
-
-OrderID → CustomerID, AddressID, PromoCodeID,
-          OrderStatus, PlacedAt, DeliveredAt
-
-BillID → OrderID, SubTotal, TaxAmount,
-         DiscountAmount, TotalAmount
+*(Note: All other seeded demo users use the password `123`)*
 
 ---
 
-📐 Normalization
+## 📁 Project Directory Structure
 
-The database has been normalized up to Third Normal Form (3NF).
-
-First Normal Form (1NF)
-
-- Atomic values only
-- No repeating groups
-- Unique primary keys
-
-Second Normal Form (2NF)
-
-- No partial dependencies
-- Composite-key relations analyzed
-- Surrogate keys used where appropriate
-
-Third Normal Form (3NF)
-
-- No transitive dependencies
-- Entity separation through foreign keys
-- Redundancy minimized
-
-Accepted Denormalization
-
-For performance optimization:
-
-- "Bill.TotalAmount"
-- "Rider.AvgRating"
-
-These values are maintained through application logic.
-
----
-
-🛠 Technologies Used
-
-- MySQL Database
-- SQL
-- ERD Modeling
-- Relational Database Design
-- Functional Dependency Analysis
-- Database Normalization
+```
+Foodsy/Website/
+├── backend/                  # Express API Server
+│   ├── routes/               # API endpoints (auth, menu, cart, orders, admin, employee)
+│   ├── utils/                # DB connections pool and authentication middlewares
+│   ├── index.js              # Server entry point
+│   ├── package.json          # Node configuration for backend
+│   └── .env                  # Backend credentials config (gitignored)
+│
+├── mysqldatabasef/           # Database setup
+│   ├── migrations/           # Versioned SQL database changes
+│   ├── dbDDL.sql             # Full database schema definition
+│   └── dbDML2.sql            # Database seed data
+│
+├── src/                      # React Frontend
+│   ├── components/           # Reusable UI elements (Buttons, Badges, Protected Routes)
+│   ├── context/              # Authentication and Toast notification contexts
+│   ├── pages/                # Pages grouped by role (Admin, Customer, Employee, Auth)
+│   ├── services/             # Axios API integration
+│   ├── App.jsx               # React Router config and root layout
+│   ├── index.css             # Main styling system
+│   └── main.jsx              # React application entry point
+│
+├── package.json              # Frontend client configuration
+├── vite.config.js            # Vite build tool configurations
+└── README.md                 # Project Documentation
+```
 
 ---
 
-🚀 Future Improvements
+## 🤝 Contributing Guidelines
 
-- Real-time order tracking
-- Mobile application integration
-- Online payment gateway integration
-- AI-powered food recommendations
-- Restaurant analytics dashboard
-- Dynamic rider allocation
-- Customer loyalty system
+We welcome contributions from the community! If you would like to contribute to Foodsy, please follow these steps:
+
+### 1. Set Up Your Local Workspace
+1. Fork this repository on GitHub.
+2. Clone your fork locally and add the upstream repository as a remote:
+   ```bash
+   git remote add upstream <original-repo-url>
+   ```
+
+### 2. Create a Topic Branch
+Always make your changes on a dedicated feature branch. Never commit directly to the `main` branch.
+```bash
+git checkout -b feature/your-awesome-feature
+```
+
+### 3. Coding Guidelines & Practices
+*   **Code Quality**: Write clean, self-documenting code. Do not remove existing code comments or docstrings unless they are outdated or being refactored.
+*   **CSS Standards**: Foodsy uses Vanilla CSS for UI flexibility. Define custom classes or extend CSS variables inside `src/index.css` rather than writing ad-hoc styles.
+*   **Database Migrations**: If you change the database schema:
+    1. Do not modify `dbDDL.sql` directly.
+    2. Add a new `.sql` file inside `mysqldatabasef/migrations/` using a sequential numbering prefix (e.g. `0003_add_user_bio.sql`).
+*   **Test Your Changes**: Verify that both the frontend build and backend tests complete without error.
+
+### 4. Commit and Push Changes
+Write clear, concise commit messages outlining the "what" and "why":
+```bash
+git add .
+git commit -m "feat: add user bio to customer profile page"
+git push origin feature/your-awesome-feature
+```
+
+### 5. Submit a Pull Request
+1. Go to the original repository on GitHub.
+2. Click **New Pull Request**.
+3. Provide a clear description of the modifications, screenshots of visual changes (if applicable), and how you tested the changes.
 
 ---
 
-👥 Team Members
+## 📄 License
 
-Name| Roll Number
-Hassnain Ali| NUM-BSCS-2024-26
-M bilal| NUM-BSCS-2024-47
-M waseem| NUM-BSCS-2024-78
-
----
-
-👨‍🏫 Instructor
-Asiya Batool
-
----
-
-🎓 Institution
-
-Department of Computer Science
-Namal University, Mianwali, Pakistan
-
----
-
-📄 License
-
-This project was developed for educational and academic purposes as part of the Database Systems course at Namal University.
-
----
-
-⭐ Project Status
-
-✅ Database Design Completed
-✅ Relational Schema Completed
-✅ Functional Dependency Analysis Completed
-✅ Normalization Completed (3NF)
-✅ Documentation Completed
+This project is currently unlicensed. All rights reserved.
