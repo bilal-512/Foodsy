@@ -72,12 +72,6 @@ Foodsy uses a MySQL database to store its information.
 ---
 
 ### Step 3: Clone the Repository
-Clone the project repository to your local machine using Git:
-```bash
-git clone <your-repository-url>
-cd Foodsy/Website
-```
-*(Note: Replace `<your-repository-url>` with the actual URL of this repository).*
 
 ---
 
